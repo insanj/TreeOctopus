@@ -1,0 +1,13 @@
+name: TreeOctopus
+version: 1.0
+author: insanj
+main: me.insanj.TreeOctopus.TreeOctopus
+description: Placing gold on trees summons the holy Tree Octopus.
+website: http://forums.bukkit.org/threads/the-pacific-northwest-tree-octopus.29301/
+
+commands:
+  octopus:
+    #Use the following permission as a substitute for this command.
+    permissions: replicator.disable
+    description: Disables the plugin, because it is enabled by default.
+    usage: /<command>
