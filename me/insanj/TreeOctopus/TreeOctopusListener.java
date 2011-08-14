@@ -3,13 +3,13 @@
 
  Please do not modify or decompile at any date, but feel free to distribute with credit.
  Production began on Tuesday, August 2nd, 2011.
- Last edited on: 8/2/11
+ Last edited on: 8/13/11
 
- Pacific Northwest Tree Octopus Version 1.0!
+ Pacific Northwest Tree Octopus Version 1.1!
  Special thanks to: 
  		Camcade, Carlthealpaca, and Gonjigas for design and publicity and pretty much everything but the coding and whatnot.
 
- 		
+
  Works with the current CraftBukkit Build (#1000).
  All other information should be available at bukkit.org under The Pacific Northwest Tree Octopus.
 
@@ -20,33 +20,59 @@
 			TreeOctopus.java
 			TreeOctopusListener.java
 
-*/
+ */
 
 package me.insanj.TreeOctopus;
 
-import org.bukkit.ChatColor; 
-import org.bukkit.Location;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.CreatureType;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerListener;
 
-public class TreeOctopusListener extends BlockListener
+class OctopusBlockListener extends BlockListener
 {
 	TreeOctopus plugin;
-	
-	public TreeOctopusListener(TreeOctopus instance){
+
+	public OctopusBlockListener(TreeOctopus instance){
 		plugin = instance;	
-	}//end method TreeOctopusListener
-	
-    public void onBlockPlace(BlockPlaceEvent event){
-		
-    	if( plugin.enabled(event.getPlayer()) )
-    		if((event.getBlock().getTypeId() == 41) && (new Location(event.getBlock().getWorld(), event.getBlock().getLocation().getX(), event.getBlock().getLocation().getY() - 1, event.getBlock().getLocation().getZ())).getBlock().getTypeId() == 18 ){
-    			event.getPlayer().sendMessage(ChatColor.YELLOW + "Sacrifice accepted. You have summoned the all mighty tree octopus!");
-    			event.getBlock().setTypeId(0);
-    			event.getBlock().getWorld().spawnCreature(event.getBlock().getLocation(), CreatureType.SQUID);
-    		}//end if
-    	
+	}
+
+	public void onBlockPlace(BlockPlaceEvent event){
+
+		if( plugin.enabled(event.getPlayer()) ){
+			if( event.getBlock().getType().equals(Material.GOLD_BLOCK) && event.getBlockAgainst().getType().equals(Material.LEAVES) ){
+				event.getBlock().setTypeId(0);
+				event.getBlock().getWorld().spawnCreature(event.getBlock().getLocation(), CreatureType.SQUID);
+				event.getPlayer().sendMessage(ChatColor.YELLOW + "Sacrifice accepted!");
+				event.getPlayer().sendMessage(ChatColor.GREEN + "You have summoned the all mighty tree octopus!");
+			}
+		}
 	}//end method onCommandPreProcess()
-	
+
 }//end class TreeOctopusListener
+
+class OctopusPlayerListener extends PlayerListener{
+
+	TreeOctopus plugin;
+
+	public OctopusPlayerListener (TreeOctopus instance){
+		plugin = instance;	
+	}
+
+	public void onPlayerInteract(PlayerInteractEvent event){
+		
+		if( event.getAction().equals(Action.LEFT_CLICK_BLOCK) && event.getClickedBlock().getType().equals(Material.LEAVES) && 
+				event.getItem().getType().equals(Material.GOLD_INGOT) ){
+
+			event.getItem().setAmount(event.getItem().getAmount() - 1);
+			event.getClickedBlock().getWorld().spawnCreature(event.getClickedBlock().getLocation(), CreatureType.SQUID);
+			event.getPlayer().sendMessage(ChatColor.YELLOW + "Sacrifice accepted!");
+			event.getPlayer().sendMessage(ChatColor.GREEN + "You have summoned the all mighty tree octopus!");
+		}
+	}//end onPlayerInteract()
+	
+}//end OctopusPlayerListener

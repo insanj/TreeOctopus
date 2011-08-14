@@ -3,9 +3,9 @@
 
  Please do not modify or decompile at any date, but feel free to distribute with credit.
  Production began on Tuesday, August 2nd, 2011.
- Last edited on: 8/2/11
+ Last edited on: 8/13/11
 
- Pacific Northwest Tree Octopus Version 1.0!
+ Pacific Northwest Tree Octopus Version 1.1!
  Special thanks to: 
  		Camcade, Carlthealpaca, and Gonjigas for design and publicity and pretty much everything but the coding and whatnot.
 
@@ -24,71 +24,60 @@
 
 package me.insanj.TreeOctopus;
 
-import com.nijiko.permissions.PermissionHandler;
-
-import com.nijikokun.bukkit.Permissions.Permissions;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 
-//The main method/class.
 public class TreeOctopus extends JavaPlugin
 {
 	private static final Logger log = Logger.getLogger("Minecraft");
-	TreeOctopusListener blockListener = new TreeOctopusListener(this);
-	private static final String version = "1.0";
+	OctopusBlockListener blockListener = new OctopusBlockListener(this);
+	OctopusPlayerListener playerListener = new OctopusPlayerListener(this);
+	private static final String version = "1.1";
 	
+	ArrayList<Player> users = new ArrayList<Player>();
 	public static boolean permissions;
 	public PermissionHandler permissionHandler;
 	
-	ArrayList<Player> users = new ArrayList<Player>();
 
 	@Override
-	public void onEnable()
-	{
+	public void onEnable(){		
+		setupPermissions();
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.Normal, this);
-		
+		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
 		log.info("{TreeOctopus} plugin version " + version + " has successfully started.");
-		setupPermissions();
-
-	}//end method onEnable()
+	}
 	
-	//When the plugin is disabled, this method is called.
 	@Override
-	public void onDisable() 
-	{
-		log.info("{TreeOctopus} plugin version " + version + " disabled.");
-		
-	}//end method onDisable()
+	public void onDisable() {
+		log.info("{TreeOctopus} plugin version " + version + " disabled.");	
+	}
 	
-	//For permissions.
 	private void setupPermissions() {
-	      Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
+		Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
 
-	      if (this.permissionHandler == null) {
-	          if (permissionsPlugin != null) 
-	              this.permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-	          
-	          else 
-	          {
-	              log.warning("{TreeOctopus} could not detect a Permissions system, defaulting to OP usage.");
-	              permissions = false;
-	          } 
-	      }//end if
-	 }//end setupPermissions();
-	
+		if (this.permissionHandler == null) {
+			if (permissionsPlugin != null) 
+				this.permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+
+			else{
+				log.info("{TreeOctopus} could not detect a Permissions system, which is fine, but everyone will have to use the command to disable.");
+				permissions = false;
+			} 
+		}//end if
+	}//end setupPermissions()
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) 
@@ -99,22 +88,21 @@ public class TreeOctopus extends JavaPlugin
 		}
 			
 		return true;
-    	
 		
 	}//end method onCommand()
 	
 	public boolean enabled(Player player){
-		
-		if(!users.contains(player) && permissions == false)
+		if( permissions == false && !users.contains(player) )
 			return true;
 		
-		else if(permissions == true && permissionHandler.has(player, "TreeOctopus.disable"))
+		else if( permissions == true && permissionHandler.has(player, "TreeOctopus.disable") )
 			return false;
 		
 		return false;
-	}
+		
+	}//end enabled()
+	
 }//end class TreeOctopus
-
 
 /***********************************Contents of "plugin.yml":*******************************
 name: TreeOctopus

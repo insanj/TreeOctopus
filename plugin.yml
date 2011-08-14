@@ -1,8 +1,8 @@
 name: TreeOctopus
-version: 1.0
+version: 1.1
 author: insanj
 main: me.insanj.TreeOctopus.TreeOctopus
-description: Placing gold on trees summons the holy Tree Octopus.
+description: When a user places a gold block on a leaf, or left clicks it, the sacrifice to the sacred TreeOctopus is accepted.
 website: http://forums.bukkit.org/threads/the-pacific-northwest-tree-octopus.29301/
 
 commands:
